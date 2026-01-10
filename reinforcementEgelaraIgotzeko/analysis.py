@@ -20,8 +20,8 @@
 # value iteration.
 
 def question2():
-    answerDiscount = None
-    answerNoise = None
+    answerDiscount = 0.9 # Valor de gamma, marca que tanto se valora el futuro
+    answerNoise = 0 # Con cuanta probabilidad de que la acción no salga como se espera
     return answerDiscount, answerNoise
 
 if __name__ == '__main__':
