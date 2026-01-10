@@ -194,25 +194,29 @@ class ApproximateQAgent(PacmanQAgent):
         """
         "*** YOUR CODE HERE ***"
         # El valor Q es la suma de (peso_i * característica_i)
+        features = self.featExtractor.getFeatures(state, action)
+        weights = self.getWeights()
+
         return features * weights
 
     def update(self, state, action, nextState, reward):
-        """
-           Should update your weights based on transition
-        """
-        "*** YOUR CODE HERE ***"
-        # Calcular la diferencia
-        # Diferencia = [r + gamma * max Q(s', a')] - Q(s, a)
-        q_actual = self.getQValue(state, action)
-        q_s_prima = self.computeValueFromQValues(nextState) # max Q(s', a')
         
-        difference = (reward + self.gamma * q_s_prima) - q_actual
-        
+        # 1. Obtener los rasgos (features)
         features = self.featExtractor.getFeatures(state, action)
         
-        # Actualizar cada peso: w_i = w_i + alpha * difference * f_i(s, a)
-        for feature_key in features:
-            self.weights[feature_key] += self.alpha * difference * features[feature_key]
+        # 2. Calcular el Q-Value que predijimos (Q_old)
+        current_q = self.getQValue(state, action)
+        
+        # 3. Calcular el valor del futuro (V_next = max Q(s', a'))
+        next_value = self.computeValueFromQValues(nextState) 
+        
+        # 4. Calcular el término de diferencia (TD Error)
+        difference = (reward + self.discount * next_value) - current_q
+        
+        # 5. Actualizar los pesos
+        # w_i = w_i + alpha * difference * f_i
+        for feature in features:
+            self.weights[feature] += self.alpha * difference * features[feature]
 
     def final(self, state):
         "Called at the end of each game."
